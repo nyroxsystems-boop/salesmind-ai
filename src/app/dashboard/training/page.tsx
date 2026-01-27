@@ -1,22 +1,18 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import {
-    Brain,
     ArrowLeft,
     Send,
-    Mic,
-    MicOff,
     AlertTriangle,
     CheckCircle,
     XCircle,
     Lightbulb,
     Play,
     Square,
-    ChevronDown,
     User,
     Building
 } from 'lucide-react'
@@ -67,8 +63,8 @@ const DIFFICULTIES = [
     { value: 'EXPERT', label: 'Experte', desc: 'Maximale Herausforderung' }
 ]
 
-export default function TrainingPage() {
-    const { data: session, status } = useSession()
+function TrainingContent() {
+    const { status } = useSession()
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -197,8 +193,6 @@ export default function TrainingPage() {
                 body: JSON.stringify({ sessionId })
             })
 
-            const data = await res.json()
-
             if (res.ok) {
                 router.push(`/dashboard/session/${sessionId}`)
             }
@@ -243,8 +237,8 @@ export default function TrainingPage() {
                                     key={type.value}
                                     onClick={() => setCustomerType(type.value)}
                                     className={`p-4 rounded-xl border text-left transition ${customerType === type.value
-                                            ? 'border-primary-500 bg-primary-500/10'
-                                            : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
+                                        ? 'border-primary-500 bg-primary-500/10'
+                                        : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
                                         }`}
                                 >
                                     <div className="text-2xl mb-2">{type.emoji}</div>
@@ -266,8 +260,8 @@ export default function TrainingPage() {
                                     key={ind.value}
                                     onClick={() => setIndustry(ind.value)}
                                     className={`p-4 rounded-xl border text-left transition ${industry === ind.value
-                                            ? 'border-primary-500 bg-primary-500/10'
-                                            : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
+                                        ? 'border-primary-500 bg-primary-500/10'
+                                        : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
                                         }`}
                                 >
                                     <div className="text-2xl mb-2">{ind.icon}</div>
@@ -286,8 +280,8 @@ export default function TrainingPage() {
                                     key={diff.value}
                                     onClick={() => setDifficulty(diff.value)}
                                     className={`p-4 rounded-xl border text-left transition ${difficulty === diff.value
-                                            ? 'border-primary-500 bg-primary-500/10'
-                                            : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
+                                        ? 'border-primary-500 bg-primary-500/10'
+                                        : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
                                         }`}
                                 >
                                     <div className="font-medium text-sm mb-1">{diff.label}</div>
@@ -488,5 +482,24 @@ export default function TrainingPage() {
                 </div>
             </div>
         </div>
+    )
+}
+
+function TrainingLoadingFallback() {
+    return (
+        <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+            <div className="text-center">
+                <div className="w-12 h-12 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-neutral-400">Training wird geladen...</p>
+            </div>
+        </div>
+    )
+}
+
+export default function TrainingPage() {
+    return (
+        <Suspense fallback={<TrainingLoadingFallback />}>
+            <TrainingContent />
+        </Suspense>
     )
 }
