@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/db/prisma'
 import { SalesAIEngine } from '@/lib/ai/engine'
 import { CustomerType, Industry, Difficulty } from '@prisma/client'
@@ -10,7 +11,7 @@ const activeSessions = new Map<string, SalesAIEngine>()
 // POST - Start a new training session
 export async function POST(req: NextRequest) {
     try {
-        const session = await getServerSession()
+        const session = await getServerSession(authOptions)
 
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 })
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
 // GET - Get session history and status
 export async function GET(req: NextRequest) {
     try {
-        const session = await getServerSession()
+        const session = await getServerSession(authOptions)
 
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 })
