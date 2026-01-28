@@ -10,46 +10,60 @@
    ============================================ */
 
 :root {
-  /* Core Palette - Monochrome + Signal Cyan */
-  --black: #0a0a0a;
-  --graphite-950: #0f0f11;
-  --graphite-900: #141417;
-  --graphite-850: #1a1a1f;
-  --graphite-800: #202027;
-  --graphite-700: #2a2a33;
-  --graphite-600: #3a3a45;
-  --graphite-500: #52525e;
-  --graphite-400: #71717e;
-  --graphite-300: #a1a1ad;
-  --graphite-200: #d4d4dc;
-  --graphite-100: #f4f4f6;
+  /* ============================================
+     PROFESSIONAL LIGHT THEME - SalesMind AI
+     Enterprise SaaS Aesthetic
+     ============================================ */
+
+  /* Core Palette - Light Professional */
   --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --black: #030712;
 
-  /* Single Accent - Signal Cyan */
-  --accent: #00d4ff;
-  --accent-muted: rgba(0, 212, 255, 0.15);
-  --accent-subtle: rgba(0, 212, 255, 0.08);
+  /* Professional Accent - Deep Blue */
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: #dbeafe;
+  --accent-muted: rgba(37, 99, 235, 0.1);
+  --accent-subtle: rgba(37, 99, 235, 0.05);
 
-  /* Semantic - Muted */
-  --positive: #34d399;
-  --caution: #fbbf24;
-  --negative: #f87171;
+  /* Semantic Colors - Professional */
+  --positive: #059669;
+  --positive-light: #d1fae5;
+  --caution: #d97706;
+  --caution-light: #fef3c7;
+  --negative: #dc2626;
+  --negative-light: #fee2e2;
 
-  /* Backgrounds */
-  --bg-base: var(--black);
-  --bg-elevated: var(--graphite-900);
-  --bg-surface: var(--graphite-850);
-  --bg-muted: var(--graphite-800);
+  /* Backgrounds - Light */
+  --bg-base: var(--gray-50);
+  --bg-elevated: var(--white);
+  --bg-surface: var(--white);
+  --bg-muted: var(--gray-100);
 
-  /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-accent: rgba(0, 212, 255, 0.3);
+  /* Borders - Subtle */
+  --border-subtle: var(--gray-200);
+  --border-default: var(--gray-300);
+  --border-accent: var(--accent);
 
-  /* Text */
-  --text-primary: var(--graphite-100);
-  --text-secondary: var(--graphite-400);
-  --text-muted: var(--graphite-500);
+  /* Text - Dark on Light */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --text-muted: var(--gray-500);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -81,6 +95,7 @@ body {
   width: 240px;
   background: var(--bg-elevated);
   border-right: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
   height: 100vh;
   position: fixed;
   left: 0;
@@ -142,12 +157,12 @@ body {
 
 .sidebar-item:hover {
   color: var(--text-primary);
-  background: var(--bg-surface);
+  background: var(--bg-muted);
 }
 
 .sidebar-item.active {
   color: var(--accent);
-  background: var(--accent-subtle);
+  background: var(--accent-light);
 }
 
 .sidebar-item svg {
@@ -174,8 +189,14 @@ body {
 .command-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease;
+}
+
+.command-card:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .command-card-header {
@@ -238,22 +259,22 @@ body {
 
 .btn-primary {
   background: var(--accent);
-  color: var(--black);
+  color: var(--white);
 }
 
 .btn-primary:hover {
-  background: #00bfe6;
+  background: var(--accent-hover);
 }
 
 .btn-secondary {
-  background: var(--bg-muted);
+  background: var(--bg-elevated);
   color: var(--text-primary);
   border: 1px solid var(--border-default);
 }
 
 .btn-secondary:hover {
-  background: var(--graphite-700);
-  border-color: var(--graphite-600);
+  background: var(--gray-100);
+  border-color: var(--gray-400);
 }
 
 .btn-ghost {
@@ -263,7 +284,7 @@ body {
 
 .btn-ghost:hover {
   color: var(--text-primary);
-  background: var(--bg-surface);
+  background: var(--gray-100);
 }
 
 .btn:disabled {
@@ -387,14 +408,14 @@ body {
 }
 
 .chat-bubble-user {
-  background: var(--graphite-700);
-  color: var(--text-primary);
+  background: var(--accent);
+  color: var(--white);
   margin-left: auto;
   border-bottom-right-radius: 2px;
 }
 
 .chat-bubble-ai {
-  background: var(--bg-surface);
+  background: var(--gray-100);
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
   border-bottom-left-radius: 2px;
@@ -405,13 +426,13 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: var(--graphite-700);
+  background: var(--gray-200);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--gray-700);
 }
 
 /* Status Bar in Simulation */
@@ -478,19 +499,22 @@ body {
 .select-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 16px;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .select-card:hover {
-  border-color: var(--graphite-600);
+  border-color: var(--gray-400);
+  box-shadow: var(--shadow-md);
 }
 
 .select-card.selected {
   border-color: var(--accent);
-  background: var(--accent-subtle);
+  background: var(--accent-light);
+  box-shadow: 0 0 0 3px var(--accent-muted);
 }
 
 .select-card-title {
@@ -763,13 +787,14 @@ body {
 /* Enhanced Header */
 .sim-header {
   grid-column: 1 / -1;
-  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-base) 100%);
+  background: var(--white);
   border-bottom: 1px solid var(--border-subtle);
   padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  box-shadow: var(--shadow-sm);
 }
 
 .sim-header-left {
@@ -866,7 +891,7 @@ body {
 
 .sim-metric-bar {
   height: 4px;
-  background: var(--graphite-800);
+  background: var(--gray-200);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -984,14 +1009,14 @@ body {
 }
 
 .sim-avatar.customer {
-  background: linear-gradient(135deg, var(--graphite-700), var(--graphite-600));
-  color: var(--text-secondary);
+  background: var(--gray-200);
+  color: var(--gray-700);
   border: 1px solid var(--border-subtle);
 }
 
 .sim-avatar.user {
-  background: linear-gradient(135deg, var(--accent), #0891b2);
-  color: var(--black);
+  background: var(--accent);
+  color: var(--white);
 }
 
 .sim-bubble-container {
@@ -1009,15 +1034,15 @@ body {
 }
 
 .sim-bubble.customer {
-  background: var(--bg-surface);
+  background: var(--gray-100);
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
   border-bottom-left-radius: 4px;
 }
 
 .sim-bubble.user {
-  background: var(--graphite-700);
-  color: var(--text-primary);
+  background: var(--accent);
+  color: var(--white);
   border-bottom-right-radius: 4px;
 }
 
@@ -1135,7 +1160,7 @@ body {
   border-radius: 12px;
   background: var(--accent);
   border: none;
-  color: var(--black);
+  color: var(--white);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1144,7 +1169,7 @@ body {
 }
 
 .sim-send-btn:hover:not(:disabled) {
-  background: #00bfe6;
+  background: var(--accent-hover);
   transform: scale(1.05);
 }
 
