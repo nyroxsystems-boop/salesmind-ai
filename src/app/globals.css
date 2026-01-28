@@ -11,32 +11,37 @@
 
 :root {
   /* ============================================
-     PROFESSIONAL LIGHT THEME - SalesMind AI
-     Enterprise SaaS Aesthetic
+     SALESMIND PREMIUM DESIGN SYSTEM
+     "Die Sales Arena" - Executive Aesthetic
+     Navy + Gold - Luxury B2B Training
      ============================================ */
 
-  /* Core Palette - Light Professional */
+  /* Core Palette - Premium Navy */
+  --navy-950: #020617;
+  --navy-900: #0f172a;
+  --navy-800: #1e293b;
+  --navy-700: #334155;
+  --navy-600: #475569;
+  --navy-500: #64748b;
+  --navy-400: #94a3b8;
+  --navy-300: #cbd5e1;
+  --navy-200: #e2e8f0;
+  --navy-100: #f1f5f9;
+  --navy-50: #f8fafc;
   --white: #ffffff;
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb;
-  --gray-300: #d1d5db;
-  --gray-400: #9ca3af;
-  --gray-500: #6b7280;
-  --gray-600: #4b5563;
-  --gray-700: #374151;
-  --gray-800: #1f2937;
-  --gray-900: #111827;
-  --black: #030712;
 
-  /* Professional Accent - Deep Blue */
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-light: #dbeafe;
-  --accent-muted: rgba(37, 99, 235, 0.1);
-  --accent-subtle: rgba(37, 99, 235, 0.05);
+  /* Accent - Premium Gold/Amber */
+  --gold: #f59e0b;
+  --gold-hover: #d97706;
+  --gold-light: #fef3c7;
+  --gold-muted: rgba(245, 158, 11, 0.15);
+  --gold-subtle: rgba(245, 158, 11, 0.08);
 
-  /* Semantic Colors - Professional */
+  /* Secondary Accent - Deep Orange for CTAs */
+  --orange: #ea580c;
+  --orange-hover: #c2410c;
+
+  /* Semantic Colors */
   --positive: #059669;
   --positive-light: #d1fae5;
   --caution: #d97706;
@@ -44,26 +49,30 @@
   --negative: #dc2626;
   --negative-light: #fee2e2;
 
-  /* Backgrounds - Light */
-  --bg-base: var(--gray-50);
+  /* Backgrounds - Clean but Warm */
+  --bg-base: var(--navy-50);
   --bg-elevated: var(--white);
   --bg-surface: var(--white);
-  --bg-muted: var(--gray-100);
+  --bg-muted: var(--navy-100);
+  --bg-dark: var(--navy-900);
 
-  /* Borders - Subtle */
-  --border-subtle: var(--gray-200);
-  --border-default: var(--gray-300);
-  --border-accent: var(--accent);
+  /* Borders */
+  --border-subtle: var(--navy-200);
+  --border-default: var(--navy-300);
+  --border-accent: var(--gold);
 
-  /* Text - Dark on Light */
-  --text-primary: var(--gray-900);
-  --text-secondary: var(--gray-600);
-  --text-muted: var(--gray-500);
+  /* Text */
+  --text-primary: var(--navy-900);
+  --text-secondary: var(--navy-600);
+  --text-muted: var(--navy-500);
+  --text-on-dark: var(--navy-100);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  /* Premium Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -2px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  --shadow-gold: 0 4px 14px 0 rgba(245, 158, 11, 0.25);
 }
 
 * {
@@ -161,8 +170,8 @@ body {
 }
 
 .sidebar-item.active {
-  color: var(--accent);
-  background: var(--accent-light);
+  color: var(--gold);
+  background: var(--gold-subtle);
 }
 
 .sidebar-item svg {
@@ -258,12 +267,14 @@ body {
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: var(--white);
+  background: var(--gold);
+  color: var(--navy-900);
+  font-weight: 600;
 }
 
 .btn-primary:hover {
-  background: var(--accent-hover);
+  background: var(--gold-hover);
+  box-shadow: var(--shadow-gold);
 }
 
 .btn-secondary {
@@ -273,8 +284,8 @@ body {
 }
 
 .btn-secondary:hover {
-  background: var(--gray-100);
-  border-color: var(--gray-400);
+  background: var(--navy-100);
+  border-color: var(--navy-400);
 }
 
 .btn-ghost {
@@ -284,7 +295,7 @@ body {
 
 .btn-ghost:hover {
   color: var(--text-primary);
-  background: var(--gray-100);
+  background: var(--navy-100);
 }
 
 .btn:disabled {
@@ -507,14 +518,14 @@ body {
 }
 
 .select-card:hover {
-  border-color: var(--gray-400);
+  border-color: var(--navy-400);
   box-shadow: var(--shadow-md);
 }
 
 .select-card.selected {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  box-shadow: 0 0 0 3px var(--accent-muted);
+  border-color: var(--gold);
+  background: var(--gold-subtle);
+  box-shadow: 0 0 0 3px var(--gold-muted);
 }
 
 .select-card-title {
