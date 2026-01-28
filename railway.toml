@@ -3,7 +3,7 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "npx prisma migrate deploy && node server.js"
+startCommand = "npx prisma migrate resolve --applied 20250101000000_init 2>/dev/null || true && npx prisma migrate deploy && node server.js"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
