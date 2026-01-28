@@ -10,7 +10,7 @@
     "lint": "next lint",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate deploy",
+    "db:migrate": "prisma migrate resolve --applied 20250101000000_init || true && prisma migrate deploy",
     "db:studio": "prisma studio"
   },
   "dependencies": {
