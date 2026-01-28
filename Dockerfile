@@ -36,6 +36,9 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 
+# Copy entrypoint script
+COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
+
 # Copy ALL node_modules for Prisma CLI to work properly
 COPY --from=builder /app/node_modules ./node_modules
 
@@ -49,4 +52,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+ENTRYPOINT ["/bin/sh", "./docker-entrypoint.sh"]
