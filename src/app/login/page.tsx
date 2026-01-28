@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Brain, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react'
+import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
     const router = useRouter()
@@ -38,86 +38,107 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 relative">
-            <div className="hero-gradient" />
-
-            <div className="w-full max-w-md relative z-10">
+        <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--bg-base)' }}>
+            <div className="w-full max-w-sm">
                 {/* Logo */}
-                <div className="text-center mb-8">
+                <div className="text-center mb-10">
                     <Link href="/" className="inline-flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-accent-cyan flex items-center justify-center">
-                            <Brain className="w-7 h-7 text-white" />
+                        <div
+                            className="w-10 h-10 rounded-lg flex items-center justify-center"
+                            style={{ background: 'var(--accent)' }}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--black)' }}>
+                                <path d="M12 2a8 8 0 1 0 8 8" />
+                                <path d="M12 2v4" />
+                                <path d="M12 10v4" />
+                                <circle cx="12" cy="18" r="2" />
+                            </svg>
                         </div>
-                        <span className="text-2xl font-bold">SalesMind AI</span>
+                        <span className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+                            SalesMind
+                        </span>
                     </Link>
                 </div>
 
-                {/* Card */}
-                <div className="glass-card-elevated p-8">
-                    <h1 className="text-2xl font-bold text-center mb-2">Willkommen zurück</h1>
-                    <p className="text-neutral-400 text-center mb-8">
-                        Melde dich an, um mit dem Training fortzufahren
+                {/* Form Card */}
+                <div className="command-card">
+                    <h1
+                        className="text-xl font-semibold text-center mb-1"
+                        style={{ color: 'var(--text-primary)' }}
+                    >
+                        Anmelden
+                    </h1>
+                    <p
+                        className="text-center text-sm mb-8"
+                        style={{ color: 'var(--text-secondary)' }}
+                    >
+                        Willkommen zurück
                     </p>
 
                     {error && (
-                        <div className="flex items-center gap-2 p-4 mb-6 rounded-xl bg-error/10 border border-error/20 text-error text-sm">
+                        <div
+                            className="flex items-center gap-2 p-3 mb-6 rounded text-sm"
+                            style={{
+                                background: 'rgba(248, 113, 113, 0.1)',
+                                border: '1px solid rgba(248, 113, 113, 0.2)',
+                                color: 'var(--negative)'
+                            }}
+                        >
                             <AlertCircle className="w-4 h-4 flex-shrink-0" />
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-neutral-300">
-                                E-Mail
-                            </label>
+                            <label className="input-label">E-Mail</label>
                             <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
+                                <Mail
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                                    style={{ color: 'var(--text-muted)' }}
+                                />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="input-field pl-12"
-                                    placeholder="deine@email.de"
+                                    className="input-field"
+                                    style={{ paddingLeft: '40px' }}
+                                    placeholder="name@firma.de"
                                     required
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-neutral-300">
-                                Passwort
-                            </label>
+                            <label className="input-label">Passwort</label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
+                                <Lock
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                                    style={{ color: 'var(--text-muted)' }}
+                                />
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="input-field pl-12"
+                                    className="input-field"
+                                    style={{ paddingLeft: '40px' }}
                                     placeholder="••••••••"
                                     required
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" className="w-4 h-4 rounded border-neutral-600 bg-bg-tertiary" />
-                                <span className="text-neutral-400">Angemeldet bleiben</span>
-                            </label>
-                            <Link href="/forgot-password" className="text-primary-400 hover:text-primary-300">
-                                Passwort vergessen?
-                            </Link>
-                        </div>
-
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="btn btn-primary w-full"
+                            style={{ marginTop: '24px' }}
                         >
                             {loading ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <div
+                                    className="w-4 h-4 border-2 rounded-full animate-spin"
+                                    style={{ borderColor: 'rgba(0,0,0,0.2)', borderTopColor: 'var(--black)' }}
+                                />
                             ) : (
                                 <>
                                     Anmelden
@@ -127,22 +148,20 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    <div className="mt-8 pt-6 border-t border-glass-border text-center">
-                        <p className="text-neutral-400 text-sm">
-                            Noch kein Konto?{' '}
-                            <Link href="/register" className="text-primary-400 hover:text-primary-300 font-medium">
-                                Jetzt registrieren
-                            </Link>
-                        </p>
+                    <div
+                        className="mt-6 pt-6 text-center text-sm"
+                        style={{ borderTop: '1px solid var(--border-subtle)' }}
+                    >
+                        <span style={{ color: 'var(--text-muted)' }}>Noch kein Konto? </span>
+                        <Link
+                            href="/register"
+                            style={{ color: 'var(--accent)' }}
+                            className="hover:underline"
+                        >
+                            Registrieren
+                        </Link>
                     </div>
                 </div>
-
-                <p className="text-center text-neutral-500 text-xs mt-6">
-                    Mit der Anmeldung akzeptierst du unsere{' '}
-                    <Link href="/agb" className="underline hover:text-white">AGB</Link>{' '}
-                    und{' '}
-                    <Link href="/datenschutz" className="underline hover:text-white">Datenschutzerklärung</Link>
-                </p>
             </div>
         </div>
     )

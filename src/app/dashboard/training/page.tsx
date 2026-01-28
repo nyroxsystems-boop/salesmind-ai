@@ -8,9 +8,8 @@ import {
     ArrowLeft,
     Send,
     AlertTriangle,
-    CheckCircle,
-    XCircle,
-    Lightbulb,
+    Check,
+    X,
     Play,
     Square,
     User,
@@ -39,28 +38,28 @@ interface ConversationState {
 }
 
 const CUSTOMER_TYPES = [
-    { value: 'SKEPTICAL_CEO', label: 'Skeptischer Geschäftsführer', emoji: '😤' },
-    { value: 'ANNOYED_BUYER', label: 'Genervter Einkäufer', emoji: '😒' },
-    { value: 'FRIENDLY_UNDECIDED', label: 'Freundlich Unverbindlich', emoji: '😊' },
-    { value: 'PRICE_FOCUSED_SMB', label: 'Preisfixierter Mittelständler', emoji: '🧮' },
-    { value: 'CORPORATE_PROCUREMENT', label: 'Konzern-Procurement', emoji: '📋' }
+    { value: 'SKEPTICAL_CEO', label: 'Skeptischer Geschäftsführer', abbr: 'GF' },
+    { value: 'ANNOYED_BUYER', label: 'Genervter Einkäufer', abbr: 'EK' },
+    { value: 'FRIENDLY_UNDECIDED', label: 'Unverbindlicher Entscheider', abbr: 'UE' },
+    { value: 'PRICE_FOCUSED_SMB', label: 'Preisfixierter Mittelständler', abbr: 'PM' },
+    { value: 'CORPORATE_PROCUREMENT', label: 'Konzern-Procurement', abbr: 'KP' }
 ]
 
 const INDUSTRIES = [
-    { value: 'REAL_ESTATE', label: 'Immobilien', icon: '🏠' },
-    { value: 'SOLAR_ENERGY', label: 'Solar & Energie', icon: '☀️' },
-    { value: 'AGENCY', label: 'Agenturen', icon: '🎨' },
-    { value: 'SAAS_B2B', label: 'SaaS B2B', icon: '💻' },
-    { value: 'COACHING', label: 'Coaching & Beratung', icon: '🎯' },
-    { value: 'AUTOMOTIVE', label: 'Automobil', icon: '🚗' },
-    { value: 'RECRUITING', label: 'Recruiting', icon: '👥' }
+    { value: 'REAL_ESTATE', label: 'Immobilien' },
+    { value: 'SOLAR_ENERGY', label: 'Solar & Energie' },
+    { value: 'AGENCY', label: 'Agenturen' },
+    { value: 'SAAS_B2B', label: 'SaaS B2B' },
+    { value: 'COACHING', label: 'Coaching & Beratung' },
+    { value: 'AUTOMOTIVE', label: 'Automobil' },
+    { value: 'RECRUITING', label: 'Recruiting' }
 ]
 
 const DIFFICULTIES = [
-    { value: 'BEGINNER', label: 'Einsteiger', desc: 'Geduldiger Kunde, viele Hinweise' },
-    { value: 'INTERMEDIATE', label: 'Fortgeschritten', desc: 'Realistisches Gespräch' },
-    { value: 'ADVANCED', label: 'Profi', desc: 'Schwieriger Kunde, kaum Hinweise' },
-    { value: 'EXPERT', label: 'Experte', desc: 'Maximale Herausforderung' }
+    { value: 'BEGINNER', label: 'Einsteiger', desc: 'Geduldiger Kunde' },
+    { value: 'INTERMEDIATE', label: 'Fortgeschritten', desc: 'Realistisch' },
+    { value: 'ADVANCED', label: 'Profi', desc: 'Anspruchsvoll' },
+    { value: 'EXPERT', label: 'Experte', desc: 'Maximum' }
 ]
 
 function TrainingContent() {
@@ -132,7 +131,6 @@ function TrainingContent() {
         setInputValue('')
         setHint(null)
 
-        // Add user message immediately
         setMessages(prev => [...prev, {
             role: 'user',
             content: userMessage,
@@ -151,7 +149,6 @@ function TrainingContent() {
             const data = await res.json()
 
             if (res.ok) {
-                // Update last user message with analysis
                 setMessages(prev => {
                     const updated = [...prev]
                     const lastUserIdx = updated.findLastIndex(m => m.role === 'user')
@@ -161,7 +158,6 @@ function TrainingContent() {
                     return updated
                 })
 
-                // Add AI response
                 setMessages(prev => [...prev, {
                     role: 'assistant',
                     content: data.response,
@@ -210,82 +206,93 @@ function TrainingContent() {
         }
     }
 
+    const getCustomerAbbr = () => {
+        return CUSTOMER_TYPES.find(c => c.value === customerType)?.abbr || 'KD'
+    }
+
     // Setup Mode
     if (setupMode) {
         return (
-            <div className="min-h-screen bg-bg-primary">
-                <div className="max-w-4xl mx-auto px-8 py-12">
-                    <Link href="/dashboard" className="inline-flex items-center gap-2 text-neutral-400 hover:text-white mb-8">
+            <div style={{ background: 'var(--bg-base)', minHeight: '100vh' }}>
+                <div style={{ maxWidth: '640px', margin: '0 auto', padding: '48px 24px' }}>
+                    <Link
+                        href="/dashboard"
+                        className="flex items-center gap-2 mb-8"
+                        style={{ color: 'var(--text-secondary)', fontSize: '14px' }}
+                    >
                         <ArrowLeft className="w-4 h-4" />
-                        Zurück zum Dashboard
+                        Zurück
                     </Link>
 
-                    <h1 className="text-3xl font-bold mb-2">Training konfigurieren</h1>
-                    <p className="text-neutral-400 mb-10">
-                        Wähle deinen Kundentyp, die Branche und den Schwierigkeitsgrad.
+                    <h1 className="heading-page mb-2">Simulation konfigurieren</h1>
+                    <p className="text-caption mb-10">
+                        Wählen Sie Kundentyp, Branche und Schwierigkeitsgrad.
                     </p>
 
-                    {/* Customer Type Selection */}
-                    <div className="mb-10">
-                        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <User className="w-5 h-5 text-primary-400" />
-                            Kundentyp
-                        </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {/* Customer Type */}
+                    <div className="mb-8">
+                        <div className="flex items-center gap-2 mb-4">
+                            <User className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Kundentyp</span>
+                        </div>
+                        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                             {CUSTOMER_TYPES.map((type) => (
                                 <button
                                     key={type.value}
                                     onClick={() => setCustomerType(type.value)}
-                                    className={`p-4 rounded-xl border text-left transition ${customerType === type.value
-                                        ? 'border-primary-500 bg-primary-500/10'
-                                        : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
-                                        }`}
+                                    className={`select-card text-left ${customerType === type.value ? 'selected' : ''}`}
                                 >
-                                    <div className="text-2xl mb-2">{type.emoji}</div>
-                                    <div className="font-medium text-sm">{type.label}</div>
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className="customer-avatar"
+                                            style={{
+                                                width: '32px',
+                                                height: '32px',
+                                                background: customerType === type.value ? 'var(--accent)' : 'var(--graphite-700)',
+                                                color: customerType === type.value ? 'var(--black)' : 'var(--text-secondary)',
+                                                fontSize: '11px'
+                                            }}
+                                        >
+                                            {type.abbr}
+                                        </div>
+                                        <span className="select-card-title" style={{ fontSize: '13px' }}>{type.label}</span>
+                                    </div>
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Industry Selection */}
-                    <div className="mb-10">
-                        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <Building className="w-5 h-5 text-accent-cyan" />
-                            Branche
-                        </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {/* Industry */}
+                    <div className="mb-8">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Building className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Branche</span>
+                        </div>
+                        <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
                             {INDUSTRIES.map((ind) => (
                                 <button
                                     key={ind.value}
                                     onClick={() => setIndustry(ind.value)}
-                                    className={`p-4 rounded-xl border text-left transition ${industry === ind.value
-                                        ? 'border-primary-500 bg-primary-500/10'
-                                        : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
-                                        }`}
+                                    className={`select-card ${industry === ind.value ? 'selected' : ''}`}
                                 >
-                                    <div className="text-2xl mb-2">{ind.icon}</div>
-                                    <div className="font-medium text-sm">{ind.label}</div>
+                                    <span className="select-card-title" style={{ fontSize: '13px' }}>{ind.label}</span>
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Difficulty Selection */}
+                    {/* Difficulty */}
                     <div className="mb-10">
-                        <h2 className="text-lg font-semibold mb-4">Schwierigkeitsgrad</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="text-sm font-medium mb-4" style={{ color: 'var(--text-secondary)' }}>Schwierigkeitsgrad</div>
+                        <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
                             {DIFFICULTIES.map((diff) => (
                                 <button
                                     key={diff.value}
                                     onClick={() => setDifficulty(diff.value)}
-                                    className={`p-4 rounded-xl border text-left transition ${difficulty === diff.value
-                                        ? 'border-primary-500 bg-primary-500/10'
-                                        : 'border-glass-border bg-bg-tertiary hover:border-neutral-600'
-                                        }`}
+                                    className={`select-card text-center ${difficulty === diff.value ? 'selected' : ''}`}
                                 >
-                                    <div className="font-medium text-sm mb-1">{diff.label}</div>
-                                    <div className="text-xs text-neutral-500">{diff.desc}</div>
+                                    <div className="select-card-title" style={{ fontSize: '13px' }}>{diff.label}</div>
+                                    <div className="select-card-desc" style={{ fontSize: '11px' }}>{diff.desc}</div>
                                 </button>
                             ))}
                         </div>
@@ -295,14 +302,18 @@ function TrainingContent() {
                     <button
                         onClick={startSession}
                         disabled={!customerType || !industry || loading}
-                        className="w-full btn-primary text-lg py-4 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="btn btn-primary w-full"
+                        style={{ padding: '14px 24px', fontSize: '15px' }}
                     >
                         {loading ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <div
+                                className="w-5 h-5 border-2 rounded-full animate-spin"
+                                style={{ borderColor: 'rgba(0,0,0,0.2)', borderTopColor: 'var(--black)' }}
+                            />
                         ) : (
                             <>
-                                <Play className="w-5 h-5" />
-                                Training starten
+                                <Play className="w-4 h-4" />
+                                Simulation starten
                             </>
                         )}
                     </button>
@@ -311,105 +322,99 @@ function TrainingContent() {
         )
     }
 
-    // Chat Mode
+    // Chat Mode - Full Focus
     return (
-        <div className="min-h-screen bg-bg-primary flex flex-col">
+        <div className="chat-container">
             {/* Header */}
-            <header className="bg-bg-secondary border-b border-glass-border px-6 py-4">
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link href="/dashboard" className="text-neutral-400 hover:text-white">
-                            <ArrowLeft className="w-5 h-5" />
-                        </Link>
-                        <div>
-                            <h1 className="font-semibold">
-                                {CUSTOMER_TYPES.find(c => c.value === customerType)?.label}
-                            </h1>
-                            <p className="text-sm text-neutral-500">
-                                {INDUSTRIES.find(i => i.value === industry)?.label} • {DIFFICULTIES.find(d => d.value === difficulty)?.label}
-                            </p>
-                        </div>
+            <div className="chat-header">
+                <div className="flex items-center gap-4">
+                    <Link href="/dashboard" style={{ color: 'var(--text-muted)' }}>
+                        <ArrowLeft className="w-5 h-5" />
+                    </Link>
+                    <div>
+                        <h1 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                            {CUSTOMER_TYPES.find(c => c.value === customerType)?.label}
+                        </h1>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                            {INDUSTRIES.find(i => i.value === industry)?.label} · {DIFFICULTIES.find(d => d.value === difficulty)?.label}
+                        </p>
                     </div>
-
-                    {/* State Indicators */}
-                    {state && (
-                        <div className="flex items-center gap-4">
-                            <div className="text-center">
-                                <div className="text-xs text-neutral-500 mb-1">Vertrauen</div>
-                                <div className="w-24 h-2 bg-bg-tertiary rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-gradient-to-r from-error via-warning to-success transition-all"
-                                        style={{ width: `${state.trustLevel}%` }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-xs text-neutral-500 mb-1">Interesse</div>
-                                <div className="w-24 h-2 bg-bg-tertiary rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-gradient-to-r from-neutral-600 to-primary-500 transition-all"
-                                        style={{ width: `${state.interestLevel}%` }}
-                                    />
-                                </div>
-                            </div>
-                            <button
-                                onClick={endSession}
-                                disabled={ending}
-                                className="btn-secondary text-sm py-2 px-4 flex items-center gap-2"
-                            >
-                                {ending ? (
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                ) : (
-                                    <>
-                                        <Square className="w-4 h-4" />
-                                        Beenden
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    )}
                 </div>
-            </header>
+
+                {/* Status Indicators */}
+                {state && (
+                    <div className="sim-status-bar">
+                        <div className="sim-status-item">
+                            <span className="sim-status-label">Vertrauen</span>
+                            <span className="sim-status-value">{state.trustLevel}%</span>
+                        </div>
+                        <div className="sim-status-item">
+                            <span className="sim-status-label">Interesse</span>
+                            <span className="sim-status-value">{state.interestLevel}%</span>
+                        </div>
+                        <div className="sim-status-item">
+                            <span className="sim-status-label">Geduld</span>
+                            <span className="sim-status-value">{state.patienceRemaining}%</span>
+                        </div>
+                        <button
+                            onClick={endSession}
+                            disabled={ending}
+                            className="btn btn-secondary"
+                            style={{ padding: '8px 16px', fontSize: '13px' }}
+                        >
+                            {ending ? (
+                                <div
+                                    className="w-4 h-4 border-2 rounded-full animate-spin"
+                                    style={{ borderColor: 'var(--graphite-600)', borderTopColor: 'var(--text-primary)' }}
+                                />
+                            ) : (
+                                <>
+                                    <Square className="w-3 h-3" />
+                                    Beenden
+                                </>
+                            )}
+                        </button>
+                    </div>
+                )}
+            </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-auto px-6 py-6">
-                <div className="max-w-3xl mx-auto space-y-4">
+            <div className="chat-messages">
+                <div style={{ maxWidth: '700px', margin: '0 auto' }}>
                     {messages.map((message, i) => (
-                        <div key={i} className="animate-fade-in">
+                        <div key={i} className="mb-4 animate-fade-in">
                             {message.role === 'assistant' ? (
                                 <div className="flex gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center flex-shrink-0">
-                                        <span className="text-lg">
-                                            {CUSTOMER_TYPES.find(c => c.value === customerType)?.emoji}
-                                        </span>
+                                    <div className="customer-avatar" style={{ flexShrink: 0 }}>
+                                        {getCustomerAbbr()}
                                     </div>
-                                    <div className="chat-bubble-ai">
+                                    <div className="chat-bubble chat-bubble-ai">
                                         {message.content}
                                     </div>
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-end gap-2">
-                                    <div className="chat-bubble-user">
+                                    <div className="chat-bubble chat-bubble-user">
                                         {message.content}
                                     </div>
                                     {message.analysis && (
-                                        <div className="flex items-center gap-2 text-xs">
+                                        <div className="flex items-center gap-3 text-xs">
                                             {message.analysis.goodQuestion && (
-                                                <span className="flex items-center gap-1 text-success">
-                                                    <CheckCircle className="w-3 h-3" />
+                                                <span className="flex items-center gap-1" style={{ color: 'var(--positive)' }}>
+                                                    <Check className="w-3 h-3" />
                                                     Gute Frage
                                                 </span>
                                             )}
                                             {message.analysis.pressureDetected && (
-                                                <span className="flex items-center gap-1 text-error">
-                                                    <XCircle className="w-3 h-3" />
-                                                    Druck erkannt
+                                                <span className="flex items-center gap-1" style={{ color: 'var(--negative)' }}>
+                                                    <X className="w-3 h-3" />
+                                                    Druck
                                                 </span>
                                             )}
                                             {message.analysis.prematurePitch && (
-                                                <span className="flex items-center gap-1 text-warning">
+                                                <span className="flex items-center gap-1" style={{ color: 'var(--caution)' }}>
                                                     <AlertTriangle className="w-3 h-3" />
-                                                    Zu früh gepitched
+                                                    Früher Pitch
                                                 </span>
                                             )}
                                         </div>
@@ -420,13 +425,11 @@ function TrainingContent() {
                     ))}
 
                     {typing && (
-                        <div className="flex gap-3">
-                            <div className="w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center">
-                                <span className="text-lg">
-                                    {CUSTOMER_TYPES.find(c => c.value === customerType)?.emoji}
-                                </span>
+                        <div className="flex gap-3 mb-4">
+                            <div className="customer-avatar" style={{ flexShrink: 0 }}>
+                                {getCustomerAbbr()}
                             </div>
-                            <div className="chat-bubble-ai">
+                            <div className="chat-bubble chat-bubble-ai">
                                 <div className="typing-indicator">
                                     <span></span>
                                     <span></span>
@@ -442,42 +445,48 @@ function TrainingContent() {
 
             {/* Hint Banner */}
             {hint && (
-                <div className="px-6">
-                    <div className="max-w-3xl mx-auto mb-4">
-                        <div className="flex items-center gap-3 p-4 rounded-xl bg-warning/10 border border-warning/20">
-                            <Lightbulb className="w-5 h-5 text-warning flex-shrink-0" />
-                            <p className="text-sm text-warning">{hint}</p>
-                            <button
-                                onClick={() => setHint(null)}
-                                className="ml-auto text-warning/60 hover:text-warning"
-                            >
-                                ×
-                            </button>
-                        </div>
+                <div style={{ padding: '0 24px' }}>
+                    <div
+                        className="flex items-center gap-3 p-3 rounded mb-4"
+                        style={{
+                            maxWidth: '700px',
+                            margin: '0 auto',
+                            background: 'rgba(251, 191, 36, 0.1)',
+                            border: '1px solid rgba(251, 191, 36, 0.2)'
+                        }}
+                    >
+                        <AlertTriangle className="w-4 h-4" style={{ color: 'var(--caution)', flexShrink: 0 }} />
+                        <p className="text-sm" style={{ color: 'var(--caution)' }}>{hint}</p>
+                        <button
+                            onClick={() => setHint(null)}
+                            className="ml-auto"
+                            style={{ color: 'var(--caution)', opacity: 0.6 }}
+                        >
+                            ×
+                        </button>
                     </div>
                 </div>
             )}
 
             {/* Input */}
-            <div className="bg-bg-secondary border-t border-glass-border px-6 py-4">
-                <div className="max-w-3xl mx-auto flex items-end gap-3">
-                    <div className="flex-1 relative">
-                        <textarea
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Deine Antwort..."
-                            rows={1}
-                            className="w-full input-field resize-none pr-12"
-                            style={{ minHeight: '48px', maxHeight: '120px' }}
-                        />
-                    </div>
+            <div className="chat-input-area">
+                <div className="flex items-end gap-3" style={{ maxWidth: '700px', margin: '0 auto' }}>
+                    <textarea
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Ihre Antwort..."
+                        rows={1}
+                        className="input-field flex-1"
+                        style={{ resize: 'none', minHeight: '44px', maxHeight: '120px' }}
+                    />
                     <button
                         onClick={sendMessage}
                         disabled={!inputValue.trim() || typing}
-                        className="btn-primary p-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="btn btn-primary"
+                        style={{ padding: '10px 14px' }}
                     >
-                        <Send className="w-5 h-5" />
+                        <Send className="w-4 h-4" />
                     </button>
                 </div>
             </div>
@@ -487,11 +496,11 @@ function TrainingContent() {
 
 function TrainingLoadingFallback() {
     return (
-        <div className="min-h-screen bg-bg-primary flex items-center justify-center">
-            <div className="text-center">
-                <div className="w-12 h-12 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-neutral-400">Training wird geladen...</p>
-            </div>
+        <div className="flex items-center justify-center" style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
+            <div
+                className="w-8 h-8 border-2 rounded-full animate-spin"
+                style={{ borderColor: 'var(--graphite-700)', borderTopColor: 'var(--accent)' }}
+            />
         </div>
     )
 }

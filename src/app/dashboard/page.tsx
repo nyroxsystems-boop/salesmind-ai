@@ -5,21 +5,19 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-    Brain,
-    Home,
+    LayoutDashboard,
     MessageSquare,
     BarChart3,
     Users,
     Settings,
     LogOut,
-    TrendingUp,
-    Target,
-    Award,
-    Zap,
-    ArrowRight,
     Play,
+    ChevronRight,
     Clock,
-    ChevronRight
+    Target,
+    TrendingUp,
+    Shield,
+    Briefcase
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 
@@ -53,6 +51,32 @@ interface DashboardData {
         duration: number
         completedAt: string
     }>
+}
+
+const CUSTOMER_LABELS: Record<string, string> = {
+    SKEPTICAL_CEO: 'Skeptischer GF',
+    ANNOYED_BUYER: 'Genervter Einkäufer',
+    FRIENDLY_UNDECIDED: 'Unverbindlicher Entscheider',
+    PRICE_FOCUSED_SMB: 'Preisfixierter Mittelständler',
+    CORPORATE_PROCUREMENT: 'Konzern-Procurement'
+}
+
+const INDUSTRY_LABELS: Record<string, string> = {
+    REAL_ESTATE: 'Immobilien',
+    SOLAR_ENERGY: 'Solar & Energie',
+    AGENCY: 'Agentur',
+    SAAS_B2B: 'SaaS B2B',
+    COACHING: 'Coaching',
+    AUTOMOTIVE: 'Automobil',
+    RECRUITING: 'Recruiting'
+}
+
+const SKILL_LABELS: Record<string, string> = {
+    conversationLeading: 'Gesprächsführung',
+    needsAnalysis: 'Bedarfsermittlung',
+    objectionHandling: 'Einwandbehandlung',
+    closing: 'Abschlussführung',
+    trustBuilding: 'Vertrauensaufbau'
 }
 
 export default function DashboardPage() {
@@ -89,256 +113,283 @@ export default function DashboardPage() {
 
     if (status === 'loading' || loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="w-12 h-12 border-3 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+            <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-base)' }}>
+                <div
+                    className="w-8 h-8 border-2 rounded-full animate-spin"
+                    style={{ borderColor: 'var(--graphite-700)', borderTopColor: 'var(--accent)' }}
+                />
             </div>
         )
     }
 
-    const customerTypeLabels: Record<string, string> = {
-        SKEPTICAL_CEO: 'Skeptischer GF',
-        ANNOYED_BUYER: 'Genervter Einkäufer',
-        FRIENDLY_UNDECIDED: 'Freundlich Unverbindlich',
-        PRICE_FOCUSED_SMB: 'Preisfixierter Mittelständler',
-        CORPORATE_PROCUREMENT: 'Konzern-Procurement'
-    }
-
-    const industryLabels: Record<string, string> = {
-        REAL_ESTATE: 'Immobilien',
-        SOLAR_ENERGY: 'Solar & Energie',
-        AGENCY: 'Agentur',
-        SAAS_B2B: 'SaaS B2B',
-        COACHING: 'Coaching',
-        AUTOMOTIVE: 'Automobil',
-        RECRUITING: 'Recruiting'
+    const getScoreClass = (score: number) => {
+        if (score >= 70) return 'score-high'
+        if (score >= 50) return 'score-mid'
+        return 'score-low'
     }
 
     return (
-        <div className="min-h-screen bg-bg-primary flex">
-            {/* Sidebar */}
-            <aside className="w-64 bg-bg-secondary border-r border-glass-border p-6 flex flex-col">
-                <div className="flex items-center gap-3 mb-10">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-cyan flex items-center justify-center">
-                        <Brain className="w-6 h-6 text-white" />
+        <div style={{ background: 'var(--bg-base)', minHeight: '100vh' }}>
+            {/* Fixed Sidebar */}
+            <aside className="sidebar">
+                <div className="sidebar-brand">
+                    <div className="sidebar-brand-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--black)' }}>
+                            <path d="M12 2a8 8 0 1 0 8 8" />
+                            <path d="M12 2v4" />
+                            <path d="M12 10v4" />
+                            <circle cx="12" cy="18" r="2" />
+                        </svg>
                     </div>
-                    <span className="text-lg font-bold">SalesMind AI</span>
+                    <span className="sidebar-brand-text">SalesMind</span>
                 </div>
 
-                <nav className="flex-1 space-y-2">
-                    {[
-                        { icon: Home, label: 'Dashboard', href: '/dashboard', active: true },
-                        { icon: MessageSquare, label: 'Training starten', href: '/dashboard/training' },
-                        { icon: BarChart3, label: 'Mein Fortschritt', href: '/dashboard/progress' },
-                        { icon: Users, label: 'Team', href: '/dashboard/team' },
-                        { icon: Settings, label: 'Einstellungen', href: '/dashboard/settings' }
-                    ].map((item, i) => (
-                        <Link
-                            key={i}
-                            href={item.href}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${item.active
-                                    ? 'bg-primary-500/10 text-primary-400'
-                                    : 'text-neutral-400 hover:text-white hover:bg-glass-bg'
-                                }`}
-                        >
-                            <item.icon className="w-5 h-5" />
-                            {item.label}
-                        </Link>
-                    ))}
+                <nav className="sidebar-nav">
+                    <Link href="/dashboard" className="sidebar-item active">
+                        <LayoutDashboard />
+                        Dashboard
+                    </Link>
+                    <Link href="/dashboard/training" className="sidebar-item">
+                        <MessageSquare />
+                        Simulationen
+                    </Link>
+                    <Link href="/dashboard/analyse" className="sidebar-item">
+                        <BarChart3 />
+                        Analyse
+                    </Link>
+                    <Link href="/dashboard/team" className="sidebar-item">
+                        <Users />
+                        Team
+                    </Link>
+                    <Link href="/dashboard/settings" className="sidebar-item">
+                        <Settings />
+                        Einstellungen
+                    </Link>
                 </nav>
 
                 <button
                     onClick={() => signOut({ callbackUrl: '/' })}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-400 hover:text-white hover:bg-glass-bg transition"
+                    className="sidebar-item"
+                    style={{ marginTop: 'auto' }}
                 >
-                    <LogOut className="w-5 h-5" />
+                    <LogOut />
                     Abmelden
                 </button>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-8 overflow-auto">
+            <main className="main-content">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold mb-1">
-                            Willkommen zurück, {data?.user.name?.split(' ')[0] || 'Verkäufer'}!
+                        <h1 className="heading-page mb-1">
+                            {data?.user.name?.split(' ')[0] || 'Dashboard'}
                         </h1>
-                        <p className="text-neutral-400">
-                            Bereit für dein nächstes Training?
+                        <p className="text-caption">
+                            Übersicht Ihrer Vertriebsleistung
                         </p>
                     </div>
                     <Link
                         href="/dashboard/training"
-                        className="btn-primary flex items-center gap-2"
+                        className="btn btn-primary"
                     >
                         <Play className="w-4 h-4" />
-                        Training starten
+                        Neue Simulation
                     </Link>
                 </div>
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-4 gap-6 mb-8">
-                    {[
-                        {
-                            label: 'Level',
-                            value: data?.user.level || 1,
-                            icon: Award,
-                            color: 'text-primary-400',
-                            bg: 'bg-primary-500/10'
-                        },
-                        {
-                            label: 'Gesamte XP',
-                            value: data?.user.totalXP || 0,
-                            icon: Zap,
-                            color: 'text-accent-amber',
-                            bg: 'bg-accent-amber/10'
-                        },
-                        {
-                            label: 'Sessions',
-                            value: data?.stats.totalSessions || 0,
-                            icon: MessageSquare,
-                            color: 'text-accent-cyan',
-                            bg: 'bg-accent-cyan/10'
-                        },
-                        {
-                            label: 'Ø Score',
-                            value: `${data?.stats.avgScore || 0}%`,
-                            icon: Target,
-                            color: 'text-accent-emerald',
-                            bg: 'bg-accent-emerald/10',
-                            trend: data?.stats.trend
-                        }
-                    ].map((stat, i) => (
-                        <div key={i} className="stat-card">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
-                                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                                </div>
-                                {stat.trend !== undefined && stat.trend !== 0 && (
-                                    <div className={`flex items-center gap-1 text-sm ${stat.trend > 0 ? 'text-success' : 'text-error'}`}>
-                                        <TrendingUp className={`w-4 h-4 ${stat.trend < 0 ? 'rotate-180' : ''}`} />
-                                        {Math.abs(stat.trend)}%
-                                    </div>
-                                )}
+                {/* Main Score Card */}
+                <div className="command-card mb-6">
+                    <div className="flex items-center gap-8">
+                        {/* Performance Score */}
+                        <div className="metric-display" style={{ minWidth: '160px', textAlign: 'center' }}>
+                            <div className={`metric-value large ${getScoreClass(data?.stats.avgScore || 0)}`}>
+                                {data?.stats.avgScore || 0}
                             </div>
-                            <div className="text-2xl font-bold mb-1">{stat.value}</div>
-                            <div className="text-sm text-neutral-500">{stat.label}</div>
+                            <div className="metric-label">Performance Score</div>
                         </div>
-                    ))}
+
+                        {/* Stats Grid */}
+                        <div className="flex-1 grid grid-cols-3 gap-6">
+                            <div>
+                                <div className="metric-value">{data?.stats.totalSessions || 0}</div>
+                                <div className="metric-label">Absolvierte Simulationen</div>
+                            </div>
+                            <div>
+                                <div className="metric-value flex items-center gap-2">
+                                    {data?.stats.trend !== undefined && data.stats.trend !== 0 && (
+                                        <TrendingUp
+                                            className={`w-5 h-5 ${data.stats.trend > 0 ? 'score-high' : 'score-low'}`}
+                                            style={{ transform: data.stats.trend < 0 ? 'rotate(180deg)' : 'none' }}
+                                        />
+                                    )}
+                                    {data?.stats.trend !== undefined ? `${data.stats.trend > 0 ? '+' : ''}${data.stats.trend}%` : '—'}
+                                </div>
+                                <div className="metric-label">Trend (letzte 7 Tage)</div>
+                            </div>
+                            <div>
+                                <div className="metric-value">{data?.user.currentStreak || 0}</div>
+                                <div className="metric-label">Tage am Stück</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-6">
-                    {/* Skill Profile */}
-                    <div className="col-span-2 glass-card p-6">
-                        <h2 className="text-lg font-semibold mb-6">Dein Skill-Profil</h2>
-                        <div className="space-y-4">
-                            {data?.skillProfile && Object.entries({
-                                'Gesprächsführung': data.skillProfile.conversationLeading,
-                                'Bedarfsermittlung': data.skillProfile.needsAnalysis,
-                                'Einwandbehandlung': data.skillProfile.objectionHandling,
-                                'Abschlussführung': data.skillProfile.closing,
-                                'Vertrauensaufbau': data.skillProfile.trustBuilding
-                            }).map(([skill, value]) => (
-                                <div key={skill}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm text-neutral-300">{skill}</span>
-                                        <span className="text-sm font-medium">{value}%</span>
+                <div className="grid gap-6" style={{ gridTemplateColumns: '1fr 320px' }}>
+                    {/* Left Column */}
+                    <div className="flex flex-col gap-6">
+                        {/* Skill Assessment */}
+                        <div className="command-card">
+                            <div className="command-card-header">Skill-Bewertung</div>
+                            <div className="space-y-5">
+                                {data?.skillProfile && Object.entries(SKILL_LABELS).map(([key, label]) => {
+                                    const value = data.skillProfile[key as keyof typeof data.skillProfile] || 0
+                                    return (
+                                        <div key={key}>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+                                                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{value}%</span>
+                                            </div>
+                                            <div className="progress-bar">
+                                                <div
+                                                    className={`progress-bar-fill ${value < 50 ? 'subtle' : ''}`}
+                                                    style={{ width: `${value}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+
+                            {/* Identified Weaknesses */}
+                            {data?.stats.topWeaknesses && data.stats.topWeaknesses.length > 0 && (
+                                <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border-subtle)' }}>
+                                    <div className="text-xs font-medium mb-3" style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                        Identifizierte Schwächen
                                     </div>
-                                    <div className="progress-bar">
-                                        <div
-                                            className="progress-bar-fill"
-                                            style={{ width: `${value}%` }}
-                                        />
-                                    </div>
+                                    <ul className="space-y-2">
+                                        {data.stats.topWeaknesses.map((weakness, i) => (
+                                            <li
+                                                key={i}
+                                                className="flex items-center gap-2 text-sm"
+                                                style={{ color: 'var(--text-secondary)' }}
+                                            >
+                                                <div className="status-indicator caution" />
+                                                {weakness}
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-                            ))}
+                            )}
                         </div>
 
-                        {data?.stats.topWeaknesses && data.stats.topWeaknesses.length > 0 && (
-                            <div className="mt-6 pt-6 border-t border-glass-border">
-                                <h3 className="text-sm font-medium mb-3 text-neutral-400">Fokus-Bereiche:</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {data.stats.topWeaknesses.map((weakness, i) => (
-                                        <span key={i} className="badge badge-warning">{weakness}</span>
+                        {/* Recent Sessions */}
+                        {data?.recentSessions && data.recentSessions.length > 0 && (
+                            <div className="command-card">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="command-card-header" style={{ marginBottom: 0 }}>Letzte Simulationen</div>
+                                    <Link
+                                        href="/dashboard/analyse"
+                                        className="text-xs hover:underline"
+                                        style={{ color: 'var(--accent)' }}
+                                    >
+                                        Alle anzeigen
+                                    </Link>
+                                </div>
+                                <div className="space-y-2">
+                                    {data.recentSessions.slice(0, 5).map((session) => (
+                                        <Link
+                                            key={session.id}
+                                            href={`/dashboard/session/${session.id}`}
+                                            className="flex items-center justify-between p-3 rounded transition"
+                                            style={{
+                                                background: 'var(--bg-surface)',
+                                                border: '1px solid var(--border-subtle)'
+                                            }}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div
+                                                    className={`text-lg font-semibold ${getScoreClass(session.score)}`}
+                                                    style={{ width: '40px' }}
+                                                >
+                                                    {session.score}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm" style={{ color: 'var(--text-primary)' }}>
+                                                        {CUSTOMER_LABELS[session.customerType] || session.customerType}
+                                                    </div>
+                                                    <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                                        {INDUSTRY_LABELS[session.industry] || session.industry}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                                    {Math.round(session.duration / 60)} Min
+                                                </span>
+                                                <ChevronRight className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                                            </div>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Quick Start */}
-                    <div className="glass-card p-6">
-                        <h2 className="text-lg font-semibold mb-6">Schnellstart</h2>
-                        <div className="space-y-3">
-                            {[
-                                { type: 'SKEPTICAL_CEO', industry: 'SAAS_B2B', label: 'Skeptischer CEO - SaaS' },
-                                { type: 'ANNOYED_BUYER', industry: 'AGENCY', label: 'Genervter Einkäufer - Agentur' },
-                                { type: 'PRICE_FOCUSED_SMB', industry: 'SOLAR_ENERGY', label: 'Preisfixiert - Solar' }
-                            ].map((scenario, i) => (
+                    {/* Right Column */}
+                    <div className="flex flex-col gap-6">
+                        {/* Recommended Next Action */}
+                        <div className="command-card">
+                            <div className="command-card-header">Empfohlene Aktion</div>
+                            <div
+                                className="p-4 rounded"
+                                style={{ background: 'var(--accent-subtle)', border: '1px solid var(--border-accent)' }}
+                            >
+                                <div className="flex items-center gap-3 mb-3">
+                                    <Target className="w-5 h-5" style={{ color: 'var(--accent)' }} />
+                                    <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                                        Einwandbehandlung üben
+                                    </span>
+                                </div>
+                                <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>
+                                    Ihre Einwandbehandlung zeigt Verbesserungspotenzial. Trainieren Sie mit einem skeptischen Kunden.
+                                </p>
                                 <Link
-                                    key={i}
-                                    href={`/dashboard/training?customer=${scenario.type}&industry=${scenario.industry}`}
-                                    className="flex items-center justify-between p-4 rounded-xl bg-bg-tertiary hover:bg-bg-elevated border border-glass-border hover:border-primary-500/50 transition group"
+                                    href="/dashboard/training?customer=SKEPTICAL_CEO&industry=SAAS_B2B"
+                                    className="btn btn-secondary w-full text-sm"
                                 >
-                                    <span className="text-sm">{scenario.label}</span>
-                                    <ArrowRight className="w-4 h-4 text-neutral-500 group-hover:text-primary-400 transition" />
+                                    Simulation starten
                                 </Link>
-                            ))}
+                            </div>
                         </div>
 
-                        <Link
-                            href="/dashboard/training"
-                            className="block mt-4 text-center text-sm text-primary-400 hover:text-primary-300"
-                        >
-                            Alle Szenarien anzeigen →
-                        </Link>
+                        {/* Quick Access */}
+                        <div className="command-card">
+                            <div className="command-card-header">Schnellzugriff</div>
+                            <div className="space-y-2">
+                                {[
+                                    { customer: 'SKEPTICAL_CEO', industry: 'SAAS_B2B', label: 'Skeptischer GF · SaaS', icon: Briefcase },
+                                    { customer: 'ANNOYED_BUYER', industry: 'AGENCY', label: 'Genervter Einkäufer · Agentur', icon: Shield },
+                                    { customer: 'PRICE_FOCUSED_SMB', industry: 'SOLAR_ENERGY', label: 'Preisfixiert · Solar', icon: Target }
+                                ].map((scenario, i) => (
+                                    <Link
+                                        key={i}
+                                        href={`/dashboard/training?customer=${scenario.customer}&industry=${scenario.industry}`}
+                                        className="select-card flex items-center justify-between"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <scenario.icon className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                                            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
+                                                {scenario.label}
+                                            </span>
+                                        </div>
+                                        <ChevronRight className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                {/* Recent Sessions */}
-                {data?.recentSessions && data.recentSessions.length > 0 && (
-                    <div className="mt-8 glass-card p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-lg font-semibold">Letzte Sessions</h2>
-                            <Link href="/dashboard/progress" className="text-sm text-primary-400 hover:text-primary-300">
-                                Alle anzeigen
-                            </Link>
-                        </div>
-                        <div className="space-y-3">
-                            {data.recentSessions.slice(0, 5).map((session) => (
-                                <Link
-                                    key={session.id}
-                                    href={`/dashboard/session/${session.id}`}
-                                    className="flex items-center justify-between p-4 rounded-xl bg-bg-tertiary hover:bg-bg-elevated transition group"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${session.score >= 70 ? 'bg-success/10 text-success' :
-                                                session.score >= 50 ? 'bg-warning/10 text-warning' :
-                                                    'bg-error/10 text-error'
-                                            }`}>
-                                            <span className="font-bold">{session.score}</span>
-                                        </div>
-                                        <div>
-                                            <div className="font-medium">
-                                                {customerTypeLabels[session.customerType] || session.customerType}
-                                            </div>
-                                            <div className="text-sm text-neutral-500">
-                                                {industryLabels[session.industry] || session.industry}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-sm text-neutral-500 flex items-center gap-1">
-                                            <Clock className="w-4 h-4" />
-                                            {Math.round(session.duration / 60)} Min
-                                        </div>
-                                        <ChevronRight className="w-5 h-5 text-neutral-500 group-hover:text-primary-400 transition" />
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                )}
             </main>
         </div>
     )

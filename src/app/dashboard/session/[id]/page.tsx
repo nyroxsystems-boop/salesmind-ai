@@ -6,19 +6,18 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
     ArrowLeft,
-    Award,
     TrendingUp,
     Target,
     MessageSquare,
     Shield,
-    Zap,
     CheckCircle,
     XCircle,
     AlertTriangle,
     ChevronDown,
     ChevronUp,
     Clock,
-    RefreshCw
+    RefreshCw,
+    Award
 } from 'lucide-react'
 
 interface SessionData {
@@ -61,15 +60,15 @@ interface SessionData {
     }
 }
 
-const customerTypeLabels: Record<string, string> = {
+const CUSTOMER_LABELS: Record<string, string> = {
     SKEPTICAL_CEO: 'Skeptischer Geschäftsführer',
     ANNOYED_BUYER: 'Genervter Einkäufer',
-    FRIENDLY_UNDECIDED: 'Freundlich Unverbindlich',
+    FRIENDLY_UNDECIDED: 'Unverbindlicher Entscheider',
     PRICE_FOCUSED_SMB: 'Preisfixierter Mittelständler',
     CORPORATE_PROCUREMENT: 'Konzern-Procurement'
 }
 
-const industryLabels: Record<string, string> = {
+const INDUSTRY_LABELS: Record<string, string> = {
     REAL_ESTATE: 'Immobilien',
     SOLAR_ENERGY: 'Solar & Energie',
     AGENCY: 'Agentur',
@@ -78,6 +77,14 @@ const industryLabels: Record<string, string> = {
     AUTOMOTIVE: 'Automobil',
     RECRUITING: 'Recruiting'
 }
+
+const SKILL_ITEMS = [
+    { key: 'conversationLeading', label: 'Gesprächsführung', icon: MessageSquare },
+    { key: 'needsAnalysis', label: 'Bedarfsermittlung', icon: Target },
+    { key: 'objectionHandling', label: 'Einwandbehandlung', icon: Shield },
+    { key: 'closing', label: 'Abschlussführung', icon: TrendingUp },
+    { key: 'trustBuilding', label: 'Vertrauensaufbau', icon: Award }
+]
 
 export default function SessionResultPage() {
     const { data: session, status } = useSession()
@@ -118,18 +125,21 @@ export default function SessionResultPage() {
 
     if (status === 'loading' || loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="w-12 h-12 border-3 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+            <div className="flex items-center justify-center" style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
+                <div
+                    className="w-8 h-8 border-2 rounded-full animate-spin"
+                    style={{ borderColor: 'var(--graphite-700)', borderTopColor: 'var(--accent)' }}
+                />
             </div>
         )
     }
 
     if (!data || !data.score) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="flex items-center justify-center" style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-4">Session nicht gefunden</h1>
-                    <Link href="/dashboard" className="btn-primary">
+                    <h1 className="heading-page mb-4">Session nicht gefunden</h1>
+                    <Link href="/dashboard" className="btn btn-primary">
                         Zurück zum Dashboard
                     </Link>
                 </div>
@@ -137,189 +147,195 @@ export default function SessionResultPage() {
         )
     }
 
-    const getScoreColor = (score: number) => {
-        if (score >= 80) return 'text-success'
-        if (score >= 65) return 'text-accent-emerald'
-        if (score >= 50) return 'text-warning'
-        return 'text-error'
+    const getScoreClass = (score: number) => {
+        if (score >= 70) return 'score-high'
+        if (score >= 50) return 'score-mid'
+        return 'score-low'
     }
-
-    const getScoreBg = (score: number) => {
-        if (score >= 80) return 'bg-success/10'
-        if (score >= 65) return 'bg-accent-emerald/10'
-        if (score >= 50) return 'bg-warning/10'
-        return 'bg-error/10'
-    }
-
-    const categories = [
-        { key: 'conversationLeading', label: 'Gesprächsführung', icon: MessageSquare },
-        { key: 'needsAnalysis', label: 'Bedarfsermittlung', icon: Target },
-        { key: 'objectionHandling', label: 'Einwandbehandlung', icon: Shield },
-        { key: 'closing', label: 'Abschlussführung', icon: TrendingUp },
-        { key: 'trustBuilding', label: 'Vertrauensaufbau', icon: Award }
-    ]
 
     return (
-        <div className="min-h-screen bg-bg-primary">
-            <div className="max-w-5xl mx-auto px-8 py-12">
+        <div style={{ background: 'var(--bg-base)', minHeight: '100vh' }}>
+            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 24px' }}>
                 {/* Header */}
-                <Link href="/dashboard" className="inline-flex items-center gap-2 text-neutral-400 hover:text-white mb-8">
+                <Link
+                    href="/dashboard"
+                    className="flex items-center gap-2 mb-8"
+                    style={{ color: 'var(--text-secondary)', fontSize: '14px' }}
+                >
                     <ArrowLeft className="w-4 h-4" />
                     Zurück zum Dashboard
                 </Link>
 
-                {/* Session Info */}
-                <div className="flex items-center justify-between mb-8">
+                {/* Title Section */}
+                <div className="flex items-start justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold mb-2">Session-Auswertung</h1>
-                        <p className="text-neutral-400">
-                            {customerTypeLabels[data.customerType]} • {industryLabels[data.industry]} • {data.difficulty}
+                        <h1 className="heading-page mb-2">Analyse-Report</h1>
+                        <p className="text-caption">
+                            {CUSTOMER_LABELS[data.customerType]} · {INDUSTRY_LABELS[data.industry]} · {data.difficulty}
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="text-right">
-                            <div className="text-sm text-neutral-500 mb-1">Dauer</div>
-                            <div className="flex items-center gap-1 text-neutral-300">
+                            <div className="text-xs" style={{ color: 'var(--text-muted)', marginBottom: '4px' }}>Dauer</div>
+                            <div className="flex items-center gap-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
                                 <Clock className="w-4 h-4" />
                                 {Math.round(data.duration / 60)} Min
                             </div>
                         </div>
                         <Link
                             href={`/dashboard/training?customer=${data.customerType}&industry=${data.industry}`}
-                            className="btn-primary flex items-center gap-2"
+                            className="btn btn-primary"
                         >
                             <RefreshCw className="w-4 h-4" />
-                            Nochmal trainieren
+                            Wiederholen
                         </Link>
                     </div>
                 </div>
 
-                {/* Main Score Card */}
-                <div className="glass-card-elevated p-8 mb-8">
-                    <div className="flex items-center gap-8">
-                        {/* Overall Score */}
-                        <div className={`w-32 h-32 rounded-3xl ${getScoreBg(data.score.overallScore)} flex flex-col items-center justify-center`}>
-                            <div className={`text-5xl font-bold ${getScoreColor(data.score.overallScore)}`}>
+                {/* Main Score */}
+                <div className="command-card mb-6">
+                    <div className="flex items-start gap-8">
+                        <div className="metric-display text-center" style={{ minWidth: '140px' }}>
+                            <div className={`metric-value large ${getScoreClass(data.score.overallScore)}`}>
                                 {data.score.overallScore}
                             </div>
-                            <div className="text-sm text-neutral-500">Gesamt</div>
+                            <div className="metric-label">Gesamtbewertung</div>
                         </div>
-
-                        {/* Feedback */}
                         <div className="flex-1">
-                            <p className="text-lg leading-relaxed text-neutral-200">
+                            <p className="text-body" style={{ lineHeight: '1.7', color: 'var(--text-secondary)' }}>
                                 {data.score.feedback}
                             </p>
-
-                            {/* XP Badge */}
-                            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-amber/10 text-accent-amber">
-                                <Zap className="w-4 h-4" />
-                                <span className="font-semibold">+{data.score.xpEarned} XP verdient</span>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Category Scores */}
-                <div className="grid grid-cols-5 gap-4 mb-8">
-                    {categories.map((cat) => {
-                        const score = data.score[cat.key as keyof typeof data.score] as number
+                <div className="grid gap-3 mb-6" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
+                    {SKILL_ITEMS.map((skill) => {
+                        const score = data.score[skill.key as keyof typeof data.score] as number
                         return (
-                            <div key={cat.key} className="glass-card p-4 text-center">
-                                <div className={`w-10 h-10 rounded-xl mx-auto mb-3 flex items-center justify-center ${getScoreBg(score)}`}>
-                                    <cat.icon className={`w-5 h-5 ${getScoreColor(score)}`} />
-                                </div>
-                                <div className={`text-2xl font-bold mb-1 ${getScoreColor(score)}`}>
+                            <div key={skill.key} className="command-card text-center" style={{ padding: '16px' }}>
+                                <skill.icon
+                                    className="w-5 h-5 mx-auto mb-2"
+                                    style={{ color: 'var(--text-muted)' }}
+                                />
+                                <div className={`text-xl font-semibold mb-1 ${getScoreClass(score)}`}>
                                     {score}
                                 </div>
-                                <div className="text-xs text-neutral-500">{cat.label}</div>
+                                <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                    {skill.label}
+                                </div>
                             </div>
                         )
                     })}
                 </div>
 
                 {/* Strengths & Weaknesses */}
-                <div className="grid grid-cols-2 gap-6 mb-8">
-                    <div className="glass-card p-6">
-                        <h3 className="font-semibold mb-4 flex items-center gap-2 text-success">
-                            <CheckCircle className="w-5 h-5" />
-                            Stärken
-                        </h3>
+                <div className="grid gap-6 mb-6" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                    <div className="command-card">
+                        <div className="flex items-center gap-2 mb-4">
+                            <CheckCircle className="w-4 h-4" style={{ color: 'var(--positive)' }} />
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Stärken</span>
+                        </div>
                         {data.score.strengths.length > 0 ? (
                             <ul className="space-y-2">
                                 {data.score.strengths.map((s, i) => (
-                                    <li key={i} className="flex items-center gap-2 text-neutral-300">
-                                        <div className="w-2 h-2 rounded-full bg-success" />
+                                    <li key={i} className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                                        <div className="status-indicator positive" />
                                         {s}
                                     </li>
                                 ))}
                             </ul>
                         ) : (
-                            <p className="text-neutral-500">Keine spezifischen Stärken identifiziert</p>
+                            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                                Keine spezifischen Stärken identifiziert
+                            </p>
                         )}
                     </div>
 
-                    <div className="glass-card p-6">
-                        <h3 className="font-semibold mb-4 flex items-center gap-2 text-error">
-                            <XCircle className="w-5 h-5" />
-                            Verbesserungspotenzial
-                        </h3>
+                    <div className="command-card">
+                        <div className="flex items-center gap-2 mb-4">
+                            <XCircle className="w-4 h-4" style={{ color: 'var(--negative)' }} />
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Verbesserungspotenzial</span>
+                        </div>
                         {data.score.weaknesses.length > 0 ? (
                             <ul className="space-y-2">
                                 {data.score.weaknesses.map((w, i) => (
-                                    <li key={i} className="flex items-center gap-2 text-neutral-300">
-                                        <div className="w-2 h-2 rounded-full bg-error" />
+                                    <li key={i} className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                                        <div className="status-indicator negative" />
                                         {w}
                                     </li>
                                 ))}
                             </ul>
                         ) : (
-                            <p className="text-neutral-500">Keine spezifischen Schwächen identifiziert</p>
+                            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                                Keine spezifischen Schwächen identifiziert
+                            </p>
                         )}
                     </div>
                 </div>
 
                 {/* Critical Moments */}
                 {data.score.criticalMoments.length > 0 && (
-                    <div className="glass-card p-6 mb-8">
+                    <div className="command-card mb-6">
                         <button
                             onClick={() => setExpandedMoments(!expandedMoments)}
-                            className="w-full flex items-center justify-between mb-4"
+                            className="w-full flex items-center justify-between"
                         >
-                            <h3 className="font-semibold flex items-center gap-2">
-                                <AlertTriangle className="w-5 h-5 text-warning" />
-                                Kritische Momente ({data.score.criticalMoments.length})
-                            </h3>
-                            {expandedMoments ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                            <div className="flex items-center gap-2">
+                                <AlertTriangle className="w-4 h-4" style={{ color: 'var(--caution)' }} />
+                                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                                    Kritische Momente ({data.score.criticalMoments.length})
+                                </span>
+                            </div>
+                            {expandedMoments ?
+                                <ChevronUp className="w-4 h-4" style={{ color: 'var(--text-muted)' }} /> :
+                                <ChevronDown className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                            }
                         </button>
 
                         {expandedMoments && (
-                            <div className="space-y-4">
+                            <div className="mt-4 space-y-3">
                                 {data.score.criticalMoments.map((moment, i) => (
                                     <div
                                         key={i}
-                                        className={`p-4 rounded-xl border ${moment.impact === 'positive'
-                                                ? 'border-success/30 bg-success/5'
+                                        className="p-4 rounded"
+                                        style={{
+                                            background: moment.impact === 'positive'
+                                                ? 'rgba(52, 211, 153, 0.05)'
                                                 : moment.impact === 'negative'
-                                                    ? 'border-error/30 bg-error/5'
-                                                    : 'border-neutral-700 bg-bg-tertiary'
-                                            }`}
+                                                    ? 'rgba(248, 113, 113, 0.05)'
+                                                    : 'var(--bg-surface)',
+                                            border: `1px solid ${moment.impact === 'positive'
+                                                    ? 'rgba(52, 211, 153, 0.2)'
+                                                    : moment.impact === 'negative'
+                                                        ? 'rgba(248, 113, 113, 0.2)'
+                                                        : 'var(--border-subtle)'
+                                                }`
+                                        }}
                                     >
                                         <div className="flex items-start gap-3">
-                                            <div className={`mt-1 ${moment.impact === 'positive' ? 'text-success' :
-                                                    moment.impact === 'negative' ? 'text-error' : 'text-neutral-400'
-                                                }`}>
-                                                {moment.impact === 'positive' ? <CheckCircle className="w-5 h-5" /> :
-                                                    moment.impact === 'negative' ? <XCircle className="w-5 h-5" /> :
-                                                        <AlertTriangle className="w-5 h-5" />}
+                                            <div style={{
+                                                color: moment.impact === 'positive'
+                                                    ? 'var(--positive)'
+                                                    : moment.impact === 'negative'
+                                                        ? 'var(--negative)'
+                                                        : 'var(--text-muted)',
+                                                marginTop: '2px'
+                                            }}>
+                                                {moment.impact === 'positive' ? <CheckCircle className="w-4 h-4" /> :
+                                                    moment.impact === 'negative' ? <XCircle className="w-4 h-4" /> :
+                                                        <AlertTriangle className="w-4 h-4" />}
                                             </div>
                                             <div className="flex-1">
-                                                <p className="font-medium text-sm mb-1">{moment.issue}</p>
-                                                <p className="text-sm text-neutral-400 mb-3">
+                                                <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
+                                                    {moment.issue}
+                                                </p>
+                                                <p className="text-sm mb-3" style={{ color: 'var(--text-muted)' }}>
                                                     "{moment.userMessage}"
                                                 </p>
-                                                <p className="text-sm text-primary-300">
-                                                    💡 {moment.recommendation}
+                                                <p className="text-sm" style={{ color: 'var(--accent)' }}>
+                                                    → {moment.recommendation}
                                                 </p>
                                             </div>
                                         </div>
@@ -330,49 +346,43 @@ export default function SessionResultPage() {
                     </div>
                 )}
 
-                {/* Transcript Toggle */}
-                <div className="glass-card p-6">
+                {/* Transcript */}
+                <div className="command-card">
                     <button
                         onClick={() => setShowTranscript(!showTranscript)}
                         className="w-full flex items-center justify-between"
                     >
-                        <h3 className="font-semibold flex items-center gap-2">
-                            <MessageSquare className="w-5 h-5 text-primary-400" />
-                            Gesprächsverlauf ({data.messages.filter(m => m.role !== 'SYSTEM').length} Nachrichten)
-                        </h3>
-                        {showTranscript ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                        <div className="flex items-center gap-2">
+                            <MessageSquare className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                                Gesprächsverlauf ({data.messages.filter(m => m.role !== 'SYSTEM').length} Nachrichten)
+                            </span>
+                        </div>
+                        {showTranscript ?
+                            <ChevronUp className="w-4 h-4" style={{ color: 'var(--text-muted)' }} /> :
+                            <ChevronDown className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                        }
                     </button>
 
                     {showTranscript && (
-                        <div className="mt-6 space-y-4">
+                        <div className="mt-4 space-y-3">
                             {data.messages
                                 .filter(m => m.role !== 'SYSTEM')
                                 .map((message, i) => (
-                                    <div key={i} className={`flex ${message.role === 'USER' ? 'justify-end' : ''}`}>
-                                        <div className={`max-w-[80%] p-4 rounded-xl ${message.role === 'USER'
-                                                ? 'bg-primary-600 text-white'
-                                                : 'bg-bg-tertiary border border-glass-border'
-                                            }`}>
-                                            <p className="text-sm">{message.content}</p>
-                                            {message.analysis && (
-                                                <div className="mt-2 flex flex-wrap gap-2">
-                                                    {message.analysis.goodQuestion && (
-                                                        <span className="text-xs bg-success/20 text-success px-2 py-1 rounded">
-                                                            Gute Frage
-                                                        </span>
-                                                    )}
-                                                    {message.analysis.pressureDetected && (
-                                                        <span className="text-xs bg-error/20 text-error px-2 py-1 rounded">
-                                                            Druck
-                                                        </span>
-                                                    )}
-                                                    {message.analysis.prematurePitch && (
-                                                        <span className="text-xs bg-warning/20 text-warning px-2 py-1 rounded">
-                                                            Früher Pitch
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
+                                    <div
+                                        key={i}
+                                        className={`flex ${message.role === 'USER' ? 'justify-end' : ''}`}
+                                    >
+                                        <div
+                                            className="p-3 rounded text-sm"
+                                            style={{
+                                                maxWidth: '80%',
+                                                background: message.role === 'USER' ? 'var(--graphite-700)' : 'var(--bg-surface)',
+                                                border: message.role === 'USER' ? 'none' : '1px solid var(--border-subtle)',
+                                                color: 'var(--text-primary)'
+                                            }}
+                                        >
+                                            {message.content}
                                         </div>
                                     </div>
                                 ))}
